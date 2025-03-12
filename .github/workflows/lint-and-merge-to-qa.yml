@@ -3,7 +3,7 @@ name: Lint and Merge Feature to QA
 on:
   push:
     branches:
-      - 'feature/*'  # This will trigger the workflow on push to any `feature/*` branch
+      - 'feature branch'  # This will trigger the workflow on push to any `feature/*` branch
 
 jobs:
   lint:
@@ -28,7 +28,7 @@ jobs:
           npx eslint . --ext .js,.jsx,.ts,.tsx  # Runs eslint on JavaScript/TypeScript files
 
   merge_to_qa:
-    name: Merge Feature to QA
+    name: Merge feature branch to QA branch
     needs: lint  # This job depends on the 'lint' job to be successful
     runs-on: ubuntu-latest
     if: success()  # Only proceed if linting is successful
@@ -49,10 +49,10 @@ jobs:
         run: |
           git checkout QA  # Checkout the QA branch
 
-      - name: Merge Feature Branch into QA
+      - name: Merge feature Branch into QA branch
         run: |
           git merge origin/${{ github.head_ref }} --no-ff -m "Merge feature branch ${{ github.head_ref }} into QA"
         
-      - name: Push changes to QA
+      - name: Push changes to QA branch
         run: |
           git push origin QA  # Push the merged changes to the QA branch
