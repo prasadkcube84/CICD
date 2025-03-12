@@ -1,0 +1,58 @@
+name: Lint and Merge Feature to QA
+
+on:
+  push:
+    branches:
+      - 'feature/*'  # This will trigger the workflow on push to any `feature/*` branch
+
+jobs:
+  lint:
+    name: Run Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify the Node.js version you're using
+
+      - name: Install Dependencies
+        run: |
+          npm install  # Assumes you have a package.json file with necessary dependencies
+
+      - name: Run Linter
+        run: |
+          npx eslint . --ext .js,.jsx,.ts,.tsx  # Runs eslint on JavaScript/TypeScript files
+
+  merge_to_qa:
+    name: Merge Feature to QA
+    needs: lint  # This job depends on the 'lint' job to be successful
+    runs-on: ubuntu-latest
+    if: success()  # Only proceed if linting is successful
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Git configuration
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch All Branches
+        run: git fetch --all
+
+      - name: Checkout QA branch
+        run: |
+          git checkout QA  # Checkout the QA branch
+
+      - name: Merge Feature Branch into QA
+        run: |
+          git merge origin/${{ github.head_ref }} --no-ff -m "Merge feature branch ${{ github.head_ref }} into QA"
+        
+      - name: Push changes to QA
+        run: |
+          git push origin QA  # Push the merged changes to the QA branch
