@@ -28,7 +28,7 @@ jobs:
           npx eslint . --ext .js,.jsx,.ts,.tsx  # Runs eslint on JavaScript/TypeScript files
 
   merge_to_qa:
-    name: Merge Feature to QA
+    name: Merge feature to QA branch
     needs: lint  # This job depends on the 'lint' job to be successful
     runs-on: ubuntu-latest
     if: success()  # Only proceed if linting is successful
@@ -47,12 +47,12 @@ jobs:
 
       - name: Checkout QA branch
         run: |
-          git checkout QA  # Checkout the QA branch
+          git checkout QA branch # Checkout the QA branch
 
-      - name: Merge Feature Branch into QA
+      - name: Merge Feature Branch into QA branch
         run: |
           git merge origin/${{ github.head_ref }} --no-ff -m "Merge feature branch ${{ github.head_ref }} into QA"
         
-      - name: Push changes to QA
+      - name: Push changes to QA branch
         run: |
-          git push origin QA  # Push the merged changes to the QA branch
+          git push origin QA branch  # Push the merged changes to the QA branch
